@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet": {
+            "type": "object",
+            "defaultValue": {
+                "name": "core",
+                "resourceGroup": "core",
+                "addressPrefixes": [ "10.0.0.0/16" ],
+                "subnets": [
+                    { "name": "GatewaySubnet", "addressPrefix": "10.0.0.0/24" },
+                    { "name": "subnetA",       "addressPrefix": "10.0.1.0/24" },
+                    { "name": "subnetB",       "addressPrefix": "10.0.2.0/24" }
+                ]
+            },
+            "metadata": {
+                "description": "Core Virtual Network information"
+            }
+        }
+    },
+    "variables": {
+        "uridir": "https://raw.githubusercontent.com/CloudDirect/ARMLab/master/templates/",
+        "vnetUri": "[concat(variables('uridir'), 'vNet.json')]",
+        "nsgsUri": "[concat(variables('uridir'), 'NSGs.json')]"
+    },
+    "resources": [
+        {
+            "name": "[concat('coreVirtualNetwork-', parameters('vnet').name)]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('vnet').resourceGroup]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "vnet": {
+                        "value": "[parameters('vnet')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('vnetUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "NSGs",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "NSGs",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('nsgsUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
