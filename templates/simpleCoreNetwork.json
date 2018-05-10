@@ -21,8 +21,8 @@
     },
     "variables": {
         "uridir": "https://raw.githubusercontent.com/CloudDirect/ARMLab/master/templates/",
-        "vnetUri": "[concat(variables('uridir'), 'vNet.json')]",
-        "nsgsUri": "[concat(variables('uridir'), 'NSGs.json')]"
+        "vnetUri": "[concat(variables('uridir'), 'vNet/azuredeploy.json')]",
+        "nsgsUri": "[concat(variables('uridir'), 'NSGs/azuredeploy.json')]"
     },
     "resources": [
         {
