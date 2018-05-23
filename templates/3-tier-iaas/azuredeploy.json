@@ -2,57 +2,143 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "numberOfVms": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Number of VMs per tier"
+            }
+        },
         "adminUsername": {
             "type": "string",
-            "defaultValue": "demoadmin",
+            "defaultValue": "dmadmin",
             "metadata": {
-                "description": "User name for the Virtual Machines."
+                "description": "User name for the Virtual Machine."
             }
         },
         "adminPassword": {
             "type": "securestring",
             "metadata": {
-                "description": "Password for the Virtual Machines."
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "vmPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the virtual machine"
+            },
+            "defaultValue": "myVm"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "small",
+            "allowedValues": [
+                "small",
+                "medium",
+                "large"
+            ],
+            "metadata": {
+                "description": "T-shirt size for the virtual machine"
             }
         },
         "vnet": {
             "type": "object",
             "defaultValue": {
                 "name": "core",
-                "resourceGroup": "core",
-                "addressPrefixes": [ "10.0.0.0/16" ],
+                "resourceGroup": "demo-network-rg",
+                "addressPrefixes": [
+                    "10.0.0.0/16"
+                ],
                 "subnets": [
-                    { "name": "GatewaySubnet", "addressPrefix": "10.0.0.0/24" },
-                    { "name": "subnetA",       "addressPrefix": "10.0.1.0/24" },
-                    { "name": "subnetB",       "addressPrefix": "10.0.2.0/24" }
+                    {
+                        "name": "GatewaySubnet",
+                        "addressPrefix": "10.0.0.0/24"
+                    },
+                    {
+                        "name": "WebTierSubnet",
+                        "addressPrefix": "10.0.1.0/24"
+                    },
+                    {
+                        "name": "AppTierSubnet",
+                        "addressPrefix": "10.0.2.0/24"
+                    },
+                    {
+                        "name": "DataTierSubnet",
+                        "addressPrefix": "10.0.3.0/24"
+                    },
+                    {
+                        "name": "ManagementSubnet",
+                        "addressPrefix": "10.0.4.0/24"
+                    }
                 ]
             },
             "metadata": {
                 "description": "Core Virtual Network information"
             }
         },
-        "webTierVms": {
-            "type": "object",
-            "defaultValue": {
-                "vmSize": "small",
-                "osType": "ubuntu",
-                "resourceGroup": "infra-rg",
-                "addressPrefixes": [ "10.0.0.0/16" ],
-                "subnets": [
-                    { "name": "GatewaySubnet", "addressPrefix": "10.0.0.0/24" },
-                    { "name": "subnetA",       "addressPrefix": "10.0.1.0/24" },
-                    { "name": "subnetB",       "addressPrefix": "10.0.2.0/24" }
-                ]
-            },
+        "asNames": {
+            "type": "array",
+            "defaultValue": 
+                [
+                    "WebTier",
+                    "AppTier",
+                    "DataTier"
+                ]  
+        },
+        "numberOfFds": {
+            "type": "int",
             "metadata": {
-                "description": "Core Virtual Network information"
+                "description": "Number of fault domains"
+            },
+            "defaultValue": 2
+        },
+        "globalciOwnerTag": {
+            "type": "string",
+            "defaultValue": "Luke Fussell",
+            "minLength": 1,
+            "metadata": {
+                "description": "Configuration Item Owner tag for the Virtual Machine."
+            }
+        },
+        "globalappIDTag": {
+            "type": "string",
+            "defaultValue": "DemoNested",
+            "minLength": 1,
+            "metadata": {
+                "description": "Application ID tag for the Virtual Machine."
+            }
+        },
+        "globalorgIDTag": {
+            "type": "string",
+            "defaultValue": "PreSales",
+            "minLength": 1,
+            "metadata": {
+                "description": "Organisation ID tag for the Virtual Machine."
+            }
+        },
+        "globalenvTag": {
+            "type": "string",
+            "defaultValue": "dev",
+            "minLength": 1,
+            "allowedValues": [
+                "dev",
+                "test",
+                "prod",
+                "unspecified"
+            ],
+            "metadata": {
+                "description": "Environment tag for the Virtual Machine."
             }
         }
     },
     "variables": {
         "uridir": "https://raw.githubusercontent.com/CloudDirect/ARMLab/master/templates/",
-        "vnetUri": "[concat(variables('uridir'), 'vNet.json')]",
-        "nsgsUri": "[concat(variables('uridir'), 'NSGs.json')]"
+        "vnetUri": "[concat(variables('uridir'), 'vNet/azuredeploy.json')]",
+        "nsgsUri": "[concat(variables('uridir'), 'NSGs/azuredeploy.json')]",
+        "vpngwUri": "[concat(variables('uridir'), 'vpnGateway/azuredeploy.json')]",
+        "asUri": "[concat(variables('uridir'), 'availabilitySet/azuredeploy.json')]",
+        "lbUri": "[concat(variables('uridir'), 'loadBalancer/azuredeploy.json')]",
+        "vmUri": "[concat(variables('uridir'), 'virtualMachine/azuredeploy.json')]"
     },
     "resources": [
         {
@@ -77,11 +163,80 @@
             "name": "NSGs",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "resourceGroup": "NSGs",
+            "resourceGroup": "demo-NSGs",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
                     "uri": "[variables('nsgsUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "coreVirtualNetwork-Gateway",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('vnet').resourceGroup]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "vnetName": {
+                        "value": "[parameters('vnet').name]"
+                    },
+                    "vNetResourceGroup": {
+                        "value": "[parameters('vnet').resourceGroup]"
+                    },
+                    "gatewaySku": {
+                        "value": "VpnGw1"
+                    },
+                    "ciOwnerTag": {
+                        "value": "[parameters('globalciOwnerTag')]"
+                    },
+                    "appIDTag": {
+                        "value": "[parameters('globalappIDTag')]"
+                    },
+                    "orgIDTag": {
+                        "value": "[parameters('globalorgIDTag')]"
+                    },
+                    "envTag": {
+                        "value": "[parameters('globalenvTag')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('vpngwUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "coreVirtualNetwork-multiAvailabilitySet",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('vnet').resourceGroup]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "asNames": {
+                        "value": "[parameters('asNames')]"
+                    },
+                    "numberOfFDs": {
+                        "value": "[parameters('numberOfFds')]"
+                    },
+                    "ciOwnerTag": {
+                        "value": "[parameters('globalciOwnerTag')]"
+                    },
+                    "appIDTag": {
+                        "value": "[parameters('globalappIDTag')]"
+                    },
+                    "orgIDTag": {
+                        "value": "[parameters('globalorgIDTag')]"
+                    },
+                    "envTag": {
+                        "value": "[parameters('globalenvTag')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('asUri')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
