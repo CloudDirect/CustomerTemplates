@@ -234,7 +234,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "asNames": {
-                        "value": "[concat(parameters('vmPrefix'), '-', parameters('tierNames'))]"
+                        "value": "[parameters('tierNames')]"
                     },
                     "numberOfFDs": {
                         "value": "[parameters('numberOfFds')]"
@@ -267,7 +267,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "lbNames": {
-                        "value": "[concat(parameters('vmPrefix'), '-', parameters('tierNames'))]"
+                        "value": "[parameters('tierNames')]"
                     },
                     "ciOwnerTag": {
                         "value": "[parameters('globalciOwnerTag')]"
@@ -306,7 +306,7 @@
                         "value": "[parameters('numberOfVms')]"
                     },
                     "vmPrefix": {
-                        "value": "[concat(parameters('vmPrefix'), '-', parameters('tierNames')[copyIndex()])]"
+                        "value": "[parameters('tierNames')[copyIndex()]]"
                     },
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
