@@ -234,7 +234,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "asNames": {
-                        "value": "[parameters('tierNames')]"
+                        "value": "[concat(parameters('vmPrefix'), '-', parameters('tierNames'))]"
                     },
                     "numberOfFDs": {
                         "value": "[parameters('numberOfFds')]"
@@ -267,7 +267,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "lbNames": {
-                        "value": "[parameters('tierNames')]"
+                        "value": "[concat(parameters('vmPrefix'), '-', parameters('tierNames'))]"
                     },
                     "ciOwnerTag": {
                         "value": "[parameters('globalciOwnerTag')]"
