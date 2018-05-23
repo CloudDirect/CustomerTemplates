@@ -78,14 +78,14 @@
         },
         "asNames": {
             "type": "array",
-            "defaultValue": 
-                [
-                    "WebTier",
-                    "AppTier",
-                    "DataTier"
-                ],
-                "metadata": {
-                    "description": "Names for the application tiers."
+            "defaultValue": [
+                "WebTier",
+                "AppTier",
+                "DataTier"
+            ],
+            "metadata": {
+                "description": "Names for the application tiers."
+            }
         },
         "numberOfFds": {
             "type": "int",
