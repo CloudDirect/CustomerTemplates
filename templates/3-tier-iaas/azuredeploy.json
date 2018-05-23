@@ -194,9 +194,6 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "resourceGroup": "[parameters('vnet').resourceGroup]",
-            "dependsOn": [
-                "[resourceId(parameters('netResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnet').name)]"
-            ],
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
@@ -296,9 +293,6 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "resourceGroup": "[parameters('vmResourceGroup')]",
-            "dependsOn": [
-                "[resourceId(parameters('netResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnet').name)]"
-            ],
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
