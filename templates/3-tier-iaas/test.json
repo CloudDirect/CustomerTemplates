@@ -17,7 +17,7 @@
         },
         "vmResourceGroup": {
             "type": "string",
-            "defaultValue": "arm-infra-rg",
+            "defaultValue": "demo-infra-rg",
             "metadata": {
                 "description": "Resource Group for infrastructure resources"
             }
@@ -31,11 +31,10 @@
         },
         "vmPrefix": {
             "type": "string",
-            "maxLength": 5,
             "metadata": {
                 "description": "Name for the virtual machine"
             },
-            "defaultValue": "demo"
+            "defaultValue": "myVm"
         },
         "vmSize": {
             "type": "string",
@@ -51,7 +50,7 @@
         },
         "netResourceGroup": {
             "type": "string",
-            "defaultValue": "arm-net-rg",
+            "defaultValue": "demo-network-rg",
             "metadata": {
                 "description": "Resource Group for network resources"
             }
@@ -70,19 +69,19 @@
                         "addressPrefix": "10.0.0.0/24"
                     },
                     {
-                        "name": "web",
+                        "name": "WebTierSubnet",
                         "addressPrefix": "10.0.1.0/24"
                     },
                     {
-                        "name": "app",
+                        "name": "AppTierSubnet",
                         "addressPrefix": "10.0.2.0/24"
                     },
                     {
-                        "name": "data",
+                        "name": "DataTierSubnet",
                         "addressPrefix": "10.0.3.0/24"
                     },
                     {
-                        "name": "mgmt",
+                        "name": "ManagementSubnet",
                         "addressPrefix": "10.0.4.0/24"
                     }
                 ]
@@ -94,9 +93,9 @@
         "tierNames": {
             "type": "array",
             "defaultValue": [
-                "web",
-                "app",
-                "data"
+                "WebTier",
+                "AppTier",
+                "DataTier"
             ],
             "metadata": {
                 "description": "Names for the application tiers."
@@ -289,10 +288,9 @@
             }
         },
         {
-            "name": "coreVirtualNetwork-multiVms",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "resourceGroup": "[parameters('vmResourceGroup')]",
+            "resourceGroup": "[parameters('vnet').resourceGroup]",
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
@@ -302,11 +300,11 @@
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
                     },
+                    "vmResourceGroup": {
+                        "value": "[parameters('vmResourceGroup')]"
+                    },
                     "numberOfVms": {
                         "value": "[parameters('numberOfVms')]"
-                    },
-                    "vmPrefix": {
-                        "value": "[concat(parameters('vmPrefix'), '-', 'web')]"
                     },
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
@@ -315,7 +313,7 @@
                         "value": "[parameters('vnet').name]"
                     },
                     "subnetName": {
-                        "value": "web"
+                        "value": "[parameters('tierNames')]"
                     },
                     "vnetResourceGroup": {
                         "value": "[parameters('netResourceGroup')]"
@@ -336,6 +334,21 @@
                 "templateLink": {
                     "uri": "[variables('vmUri')]",
                     "contentVersion": "1.0.0.0"
+                }
+            },
+            "copy": {
+                "name": "[concat('coreVirtualNetwork-multiVms', parameters('vNet').subnets[copyIndex('subnets')].name)]",
+                "count": "[length(parameters('vNet').subnets)]",
+                "input": {
+                    "name": "[parameters('vNet').subnets[copyIndex('subnets')].name]",
+                    "properties": {
+                        "subnetName": {
+                            "value": "[parameters('vNet').subnets[copyIndex('subnets')].name]"
+                        },
+                        "vmPrefix": {
+                            "value": "[concat(parameters('vmPrefix'), '-', parameters('vNet').subnets[copyIndex('subnets')].name)]"
+                        }
+                    }
                 }
             }
         }
