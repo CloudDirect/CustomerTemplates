@@ -17,7 +17,7 @@
         },
         "vmResourceGroup": {
             "type": "string",
-            "defaultValue": "arm-infra-rg",
+            "defaultValue": "demo-infra-rg",
             "metadata": {
                 "description": "Resource Group for infrastructure resources"
             }
@@ -51,7 +51,7 @@
         },
         "netResourceGroup": {
             "type": "string",
-            "defaultValue": "arm-net-rg",
+            "defaultValue": "demo-net-rg",
             "metadata": {
                 "description": "Resource Group for network resources"
             }
@@ -289,7 +289,7 @@
             }
         },
         {
-            "name": "coreVirtualNetwork-multiVms",
+            "name": "[concat('coreVirtualNetwork-multiVms', copyIndex(1))]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
             "resourceGroup": "[parameters('vmResourceGroup')]",
@@ -306,7 +306,7 @@
                         "value": "[parameters('numberOfVms')]"
                     },
                     "vmPrefix": {
-                        "value": "[concat(parameters('vmPrefix'), '-', 'web')]"
+                        "value": "[concat(parameters('vmPrefix'), '-', parameters('tierNames')[copyIndex()])]"
                     },
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
@@ -315,7 +315,7 @@
                         "value": "[parameters('vnet').name]"
                     },
                     "subnetName": {
-                        "value": "web"
+                        "value": "[parameters('tierNames')[copyIndex()]]"
                     },
                     "vnetResourceGroup": {
                         "value": "[parameters('netResourceGroup')]"
@@ -337,6 +337,10 @@
                     "uri": "[variables('vmUri')]",
                     "contentVersion": "1.0.0.0"
                 }
+            },
+            "copy": {
+                "name": "vmSubnetsCopy",
+                "count": "[length(parameters('tierNames'))]"
             }
         }
     ],
