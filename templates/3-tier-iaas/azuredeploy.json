@@ -2,13 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "numberOfVms": {
-            "type": "int",
-            "defaultValue": 3,
-            "metadata": {
-                "description": "Number of VMs per tier"
-            }
-        },
         "adminUsername": {
             "type": "string",
             "defaultValue": "dmadmin",
@@ -20,6 +13,20 @@
             "type": "securestring",
             "metadata": {
                 "description": "Password for the Virtual Machine."
+            }
+        },
+        "vmResourceGroup": {
+            "type": "string",
+            "defaultValue": "arm-infra-rg",
+            "metadata": {
+                "description": "Resource Group for infrastructure resources"
+            }
+        },
+        "numberOfVms": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Number of VMs per tier"
             }
         },
         "vmPrefix": {
@@ -41,11 +48,18 @@
                 "description": "T-shirt size for the virtual machine"
             }
         },
+        "netResourceGroup": {
+            "type": "string",
+            "defaultValue": "arm-net-rg",
+            "metadata": {
+                "description": "Resource Group for network resources"
+            }
+        },
         "vnet": {
             "type": "object",
             "defaultValue": {
                 "name": "core",
-                "resourceGroup": "demo-network-rg",
+                "resourceGroup": "[parameters('netResourceGroup')]",
                 "addressPrefixes": [
                     "10.0.0.0/16"
                 ],
@@ -55,19 +69,19 @@
                         "addressPrefix": "10.0.0.0/24"
                     },
                     {
-                        "name": "WebTierSubnet",
+                        "name": "web",
                         "addressPrefix": "10.0.1.0/24"
                     },
                     {
-                        "name": "AppTierSubnet",
+                        "name": "app",
                         "addressPrefix": "10.0.2.0/24"
                     },
                     {
-                        "name": "DataTierSubnet",
+                        "name": "data",
                         "addressPrefix": "10.0.3.0/24"
                     },
                     {
-                        "name": "ManagementSubnet",
+                        "name": "mgmt",
                         "addressPrefix": "10.0.4.0/24"
                     }
                 ]
@@ -76,12 +90,12 @@
                 "description": "Core Virtual Network information"
             }
         },
-        "asNames": {
+        "tierNames": {
             "type": "array",
             "defaultValue": [
-                "WebTier",
-                "AppTier",
-                "DataTier"
+                "web",
+                "app",
+                "data"
             ],
             "metadata": {
                 "description": "Names for the application tiers."
@@ -140,7 +154,7 @@
         "vpngwUri": "[concat(variables('uridir'), 'vpnGateway/azuredeploy.json')]",
         "asUri": "[concat(variables('uridir'), 'availabilitySet/azuredeploy.json')]",
         "lbUri": "[concat(variables('uridir'), 'loadBalancer/azuredeploy.json')]",
-        "vmUri": "[concat(variables('uridir'), 'virtualMachine/azuredeploy.json')]"
+        "vmUri": "[concat(variables('uridir'), 'virtualMachine-multi/azuredeploy.json')]"
     },
     "resources": [
         {
@@ -219,7 +233,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "asNames": {
-                        "value": "[parameters('asNames')]"
+                        "value": "[parameters('tierNames')]"
                     },
                     "numberOfFDs": {
                         "value": "[parameters('numberOfFds')]"
@@ -239,6 +253,87 @@
                 },
                 "templateLink": {
                     "uri": "[variables('asUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "coreVirtualNetwork-multiLoadBalancers",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('vnet').resourceGroup]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "lbNames": {
+                        "value": "[parameters('tierNames')]"
+                    },
+                    "ciOwnerTag": {
+                        "value": "[parameters('globalciOwnerTag')]"
+                    },
+                    "appIDTag": {
+                        "value": "[parameters('globalappIDTag')]"
+                    },
+                    "orgIDTag": {
+                        "value": "[parameters('globalorgIDTag')]"
+                    },
+                    "envTag": {
+                        "value": "[parameters('globalenvTag')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('lbUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "coreVirtualNetwork-multiVms",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('vmResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "numberOfVms": {
+                        "value": "[parameters('numberOfVms')]"
+                    },
+                    "vmPrefix": {
+                        "value": "[concat(parameters('vmPrefix'), '-', 'WebTier')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('vnet').name]"
+                    },
+                    "subnetName": {
+                        "value": "web"
+                    },
+                    "vnetResourceGroup": {
+                        "value": "[parameters('netResourceGroup')]"
+                    },
+                    "ciOwnerTag": {
+                        "value": "[parameters('globalciOwnerTag')]"
+                    },
+                    "appIDTag": {
+                        "value": "[parameters('globalappIDTag')]"
+                    },
+                    "orgIDTag": {
+                        "value": "[parameters('globalorgIDTag')]"
+                    },
+                    "envTag": {
+                        "value": "[parameters('globalenvTag')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('vmUri')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
