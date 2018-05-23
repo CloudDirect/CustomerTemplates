@@ -31,6 +31,7 @@
         },
         "vmPrefix": {
             "type": "string",
+            "maxLength": 5,
             "metadata": {
                 "description": "Name for the virtual machine"
             },
@@ -305,7 +306,7 @@
                         "value": "[parameters('numberOfVms')]"
                     },
                     "vmPrefix": {
-                        "value": "[concat(parameters('vmPrefix'), '-', 'WebTier')]"
+                        "value": "[concat(parameters('vmPrefix'), '-', 'web')]"
                     },
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
