@@ -180,7 +180,7 @@
             "name": "NSGs",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "resourceGroup": "demo-NSGs",
+            "resourceGroup": "NSGs",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
