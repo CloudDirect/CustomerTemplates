@@ -4,7 +4,7 @@
     "parameters": {
         "netResourceGroup": {
             "type": "string",
-            "defaultValue": "demo-net2-rg",
+            "defaultValue": "demo-net-rg",
             "metadata": {
                 "description": "Resource Group for network resources"
             }
@@ -172,7 +172,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "asNames": {
-                        "value": "[parameters('vnet').subnets.name]"
+                        "value": "[parameters('tierNames')]"
                     },
                     "numberOfFDs": {
                         "value": "[parameters('numberOfFds')]"
@@ -205,7 +205,7 @@
                 "mode": "Incremental",
                 "parameters": {
                     "lbNames": {
-                        "value": "[parameters('vnet').subnets.name]"
+                        "value": "[parameters('tierNames')]"
                     },
                     "ciOwnerTag": {
                         "value": "[parameters('globalciOwnerTag')]"
