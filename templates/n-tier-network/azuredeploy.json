@@ -2,18 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "netResourceGroup": {
-            "type": "string",
-            "defaultValue": "demo-net-rg",
-            "metadata": {
-                "description": "Resource Group for network resources"
-            }
-        },
         "vnet": {
             "type": "object",
             "defaultValue": {
                 "name": "core",
-                "resourceGroup": "[parameters('netResourceGroup')]",
+                "resourceGroup": "demo-net-rg",
                 "addressPrefixes": [
                     "10.0.0.0/16"
                 ],
@@ -35,7 +28,7 @@
                         "addressPrefix": "10.0.3.0/24"
                     },
                     {
-                        "name": "mgmt",
+                            "name": "mgmt",
                         "addressPrefix": "10.0.4.0/24"
                     }
                 ]
@@ -64,7 +57,7 @@
         },
         "globalciOwnerTag": {
             "type": "string",
-            "defaultValue": "Luke Fussell",
+            "defaultValue": "luke.fussell",
             "minLength": 1,
             "metadata": {
                 "description": "Configuration Item Owner tag for the Virtual Machine."
@@ -72,7 +65,7 @@
         },
         "globalappIDTag": {
             "type": "string",
-            "defaultValue": "DemoNested",
+            "defaultValue": "Demo",
             "minLength": 1,
             "metadata": {
                 "description": "Application ID tag for the Virtual Machine."
@@ -80,7 +73,7 @@
         },
         "globalorgIDTag": {
             "type": "string",
-            "defaultValue": "PreSales",
+            "defaultValue": "Development",
             "minLength": 1,
             "metadata": {
                 "description": "Organisation ID tag for the Virtual Machine."
