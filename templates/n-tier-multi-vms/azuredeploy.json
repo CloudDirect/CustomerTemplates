@@ -22,37 +22,47 @@
                 "description": "Resource Group for infrastructure resources"
             }
         },
+        "vmPrefix": {
+            "type": "string",
+            "defaultValue": "demo-",
+            "maxLength": 6,
+            "metadata": {
+                "description": "Prefix for virtual machine names"
+            }
+        },
         "laResourceGroup": {
             "type": "string",
-            "defaultValue": "demo-monitoring-rg",
+            "defaultValue": "demo-ops-rg",
             "metadata": {
                 "description": "Resource Group for Log Analytics resources"
             }
         },
         "laWorkspaceName": {
             "type": "string",
-            "defaultValue": "demo-monitoring-ws-cd",
+            "defaultValue": "demo-ops-monitoring-ws",
             "metadata": {
                 "description": "Resource Group for Log Analytics resources"
             }
         },
-        "numberOfVms": {
-            "type": "int",
-            "defaultValue": 4,
+        "laServiceTier": {
+            "type": "string",
+            "defaultValue": "PerGB2018",
             "metadata": {
-                "description": "Number of VMs per tier"
+                "description": "Log Analytics service tier"
             }
         },
-        "vmSize": {
-            "type": "string",
-            "defaultValue": "small",
-            "allowedValues": [
-                "small",
-                "medium",
-                "large"
-            ],
+        "laDataRetention": {
+            "type": "int",
+            "defaultValue": 30,
             "metadata": {
-                "description": "T-shirt size for the virtual machine"
+                "description": "Log Analytics data retention"
+            }
+        },
+        "laLocation": {
+            "type": "string",
+            "defaultValue": "West Europe",
+            "metadata": {
+                "description": "Resource Group for infrastructure resources"
             }
         },
         "netResourceGroup": {
@@ -103,7 +113,7 @@
         },
         "globalciOwnerTag": {
             "type": "string",
-            "defaultValue": "Luke Fussell",
+            "defaultValue": "luke.fussell",
             "minLength": 1,
             "metadata": {
                 "description": "Configuration Item Owner tag for the Virtual Machine."
@@ -111,7 +121,7 @@
         },
         "globalappIDTag": {
             "type": "string",
-            "defaultValue": "DemoNested",
+            "defaultValue": "Demo",
             "minLength": 1,
             "metadata": {
                 "description": "Application ID tag for the Virtual Machine."
@@ -119,7 +129,7 @@
         },
         "globalorgIDTag": {
             "type": "string",
-            "defaultValue": "PreSales",
+            "defaultValue": "Development",
             "minLength": 1,
             "metadata": {
                 "description": "Organisation ID tag for the Virtual Machine."
@@ -164,7 +174,7 @@
                         "value": "[parameters('vnet').subnets[copyIndex()].numberofVms]"
                     },
                     "vmPrefix": {
-                        "value": "[parameters('vnet').subnets[copyIndex()].name]"
+                        "value": "[concat(parameters('vmPrefix'), parameters('vnet').subnets[copyIndex()].name)]"
                     },
                     "vmSize": {
                         "value": "[parameters('vnet').subnets[copyIndex()].vmSize]"
@@ -212,14 +222,14 @@
                     "workspaceName": {
                         "value": "[parameters('laWorkspaceName')]"
                     },
-                    "location": {
-                        "value": "UK South"
-                    },
                     "serviceTier": {
-                        "value": "PerGB2018"
+                        "value": "[parameters('laServiceTier')]"
                     },
                     "dataRetention": {
-                        "value": 30
+                        "value": "[parameters('laDataRetention')]"
+                    },
+                    "location": {
+                        "value": "[parameters('laLocation')]"
                     }
                 },
                 "templateLink": {
