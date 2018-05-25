@@ -5,42 +5,53 @@
         "adminUsername": {
             "value": "dmadmin",
             "metadata": {
-                "description": "Default user name for the virtual machines."
+                "description": "Default user name for the virtual machines"
             }
         },
         "adminPassword": {
             "value": "",
             "metadata": {
-                "description": "Default password for the virtual machines."
+                "description": "Default password for the virtual machines"
             }
         },
         "vmResourceGroup": {
-            "value": "prod-infra-rg",
+            "value": "demo-infra-rg",
             "metadata": {
                 "description": "Resource Group for infrastructure resources"
             }
         },
+        "vmPrefix": {
+            "value": "demo-",
+            "metadata": {
+                "description": "Prefix for virtual machine names"
+            }
+        },
+        "netResourceGroup": {
+            "value": "demo-net-rg",
+            "metadata": {
+                "description": "Resource Group for network resources"
+            }
+        },
         "laResourceGroup": {
-            "value": "prod-ops-rg",
+            "value": "demo-ops-rg",
             "metadata": {
                 "description": "Resource Group for operations resources"
             }
         },
         "laWorkspaceName": {
-            "value": "prod-ops-monitoring-ws",
+            "value": "demo-ops-monitoring-ws",
             "metadata": {
                 "description": "Resource Group for Log Analytics workspace"
             }
         },
         "vnet": {
             "value": {
-                "name": "prod",
+                "name": "core",
                 "subnets": [
-                    { "name": "GatewaySubnet",  "numberofVms": 4,   "vmSize": "small" },
-                    { "name": "web",            "numberofVms": 4,   "vmSize": "small" },
+                    { "name": "web",            "numberofVms": 3,   "vmSize": "small" },
                     { "name": "app",            "numberofVms": 3,   "vmSize": "small" },
                     { "name": "data",           "numberofVms": 2,   "vmSize": "large" },
-                    { "name": "mgmt",           "numberofVms": 1,   "vmSize": "small" }
+                    { "name": "mgmt",           "numberofVms": 1,   "vmSize": "medium" }
                 ]
             },
             "metadata": {
@@ -48,25 +59,25 @@
             }
         },
         "globalciOwnerTag": {
-            "value": "Luke Fussell",
+            "value": "luke.fussell",
             "metadata": {
                 "description": "Configuration Item Owner tag for the infrastructure resources"
             }
         },
         "globalappIDTag": {
-            "value": "WebApplication",
+            "value": "Demo",
             "metadata": {
                 "description": "Application ID tag for infrastructure resources"
             }
         },
         "globalorgIDTag": {
-            "value": "PreSales",
+            "value": "Development",
             "metadata": {
                 "description": "Organisation ID tag for infrastructure resources"
             }
         },
         "globalenvTag": {
-            "value": "prod",
+            "value": "dev",
             "metadata": {
                 "description": "Environment tag for infrastructure resources"
             }
