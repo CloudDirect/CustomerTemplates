@@ -3,10 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmResourceGroup": {
-            "value": "multi-region-us-infra-rg",
-            "metadata": {
-                "description": "Resource Group for infrastructure resources"
-            }
+            "value": "multi-region-us-infra-rg"
         },
         "vnet": {
             "value": {
