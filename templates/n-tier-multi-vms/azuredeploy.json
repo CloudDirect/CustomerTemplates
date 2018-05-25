@@ -152,7 +152,7 @@
     },
     "variables": {
         "uridir": "https://raw.githubusercontent.com/CloudDirect/ARMLab/master/templates/",
-        "vmUri": "[concat(variables('uridir'), 'virtualMachine-multi/azuredeploy.json')]",
+        "vmUri": "[concat(variables('uridir'), 'virtualMachine-multi-as/azuredeploy.json')]",
         "laUri": "[concat(variables('uridir'), 'loganalyticslight/azuredeploy.json')]"
     },
     "resources": [
