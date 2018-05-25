@@ -1,0 +1,243 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "dmadmin",
+            "metadata": {
+                "description": "User name for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "vmResourceGroup": {
+            "type": "string",
+            "defaultValue": "demo-infra-rg",
+            "metadata": {
+                "description": "Resource Group for infrastructure resources"
+            }
+        },
+        "vmPrefix": {
+            "type": "string",
+            "defaultValue": "demo-",
+            "maxLength": 6,
+            "metadata": {
+                "description": "Prefix for virtual machine names"
+            }
+        },
+        "laResourceGroup": {
+            "type": "string",
+            "defaultValue": "demo-ops-rg",
+            "metadata": {
+                "description": "Resource Group for Log Analytics resources"
+            }
+        },
+        "laWorkspaceName": {
+            "type": "string",
+            "defaultValue": "demo-ops-monitoring-ws",
+            "metadata": {
+                "description": "Resource Group for Log Analytics resources"
+            }
+        },
+        "laServiceTier": {
+            "type": "string",
+            "defaultValue": "PerGB2018",
+            "metadata": {
+                "description": "Log Analytics service tier"
+            }
+        },
+        "laDataRetention": {
+            "type": "int",
+            "defaultValue": 30,
+            "metadata": {
+                "description": "Log Analytics data retention"
+            }
+        },
+        "laLocation": {
+            "type": "string",
+            "defaultValue": "West Europe",
+            "metadata": {
+                "description": "Resource Group for infrastructure resources"
+            }
+        },
+        "netResourceGroup": {
+            "type": "string",
+            "defaultValue": "demo-net-rg",
+            "metadata": {
+                "description": "Resource Group for network resources"
+            }
+        },
+        "vnet": {
+            "type": "object",
+            "defaultValue": {
+                "name": "core",
+                "resourceGroup": "[parameters('netResourceGroup')]",
+                "addressPrefixes": [
+                    "10.0.0.0/16"
+                ],
+                "subnets": [
+                    {
+                        "name": "web",
+                        "addressPrefix": "10.0.1.0/24",
+                        "numberofVms": 4,
+                        "vmSize": "small"
+                    },
+                    {
+                        "name": "app",
+                        "addressPrefix": "10.0.2.0/24",
+                        "numberofVms": 4,
+                        "vmSize": "small"
+                    },
+                    {
+                        "name": "data",
+                        "addressPrefix": "10.0.3.0/24",
+                        "numberofVms": 5,
+                        "vmSize": "medium"
+                    },
+                    {
+                        "name": "mgmt",
+                        "addressPrefix": "10.0.4.0/24",
+                        "numberofVms": 1,
+                        "vmSize": "small"
+                    }
+                ]
+            },
+            "metadata": {
+                "description": "Core Virtual Network information"
+            }
+        },
+        "globalciOwnerTag": {
+            "type": "string",
+            "defaultValue": "luke.fussell",
+            "minLength": 1,
+            "metadata": {
+                "description": "Configuration Item Owner tag for the Virtual Machine."
+            }
+        },
+        "globalappIDTag": {
+            "type": "string",
+            "defaultValue": "Demo",
+            "minLength": 1,
+            "metadata": {
+                "description": "Application ID tag for the Virtual Machine."
+            }
+        },
+        "globalorgIDTag": {
+            "type": "string",
+            "defaultValue": "Development",
+            "minLength": 1,
+            "metadata": {
+                "description": "Organisation ID tag for the Virtual Machine."
+            }
+        },
+        "globalenvTag": {
+            "type": "string",
+            "defaultValue": "dev",
+            "minLength": 1,
+            "allowedValues": [
+                "dev",
+                "test",
+                "prod",
+                "unspecified"
+            ],
+            "metadata": {
+                "description": "Environment tag for the Virtual Machine."
+            }
+        }
+    },
+    "variables": {
+        "uridir": "https://raw.githubusercontent.com/CloudDirect/ARMLab/master/templates/",
+        "vmUri": "[concat(variables('uridir'), 'virtualMachine-multi/azuredeploy.json')]",
+        "laUri": "[concat(variables('uridir'), 'loganalyticslight/azuredeploy.json')]"
+    },
+    "resources": [
+        {
+            "name": "[concat('coreVirtualNetwork-multiVms', copyIndex(1))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('vmResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "numberOfVms": {
+                        "value": "[parameters('vnet').subnets[copyIndex()].numberofVms]"
+                    },
+                    "vmPrefix": {
+                        "value": "[concat(parameters('vmPrefix'), parameters('vnet').subnets[copyIndex()].name)]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vnet').subnets[copyIndex()].vmSize]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('vnet').name]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('vnet').subnets[copyIndex()].name]"
+                    },
+                    "vnetResourceGroup": {
+                        "value": "[parameters('netResourceGroup')]"
+                    },
+                    "ciOwnerTag": {
+                        "value": "[parameters('globalciOwnerTag')]"
+                    },
+                    "appIDTag": {
+                        "value": "[parameters('globalappIDTag')]"
+                    },
+                    "orgIDTag": {
+                        "value": "[parameters('globalorgIDTag')]"
+                    },
+                    "envTag": {
+                        "value": "[parameters('globalenvTag')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('vmUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            },
+            "copy": {
+                "name": "vmSubnetsCopy",
+                "count": "[length(parameters('vnet').subnets)]"
+            }
+        },
+        {
+            "name": "logAnalytics",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('laResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[parameters('laWorkspaceName')]"
+                    },
+                    "serviceTier": {
+                        "value": "[parameters('laServiceTier')]"
+                    },
+                    "dataRetention": {
+                        "value": "[parameters('laDataRetention')]"
+                    },
+                    "location": {
+                        "value": "[parameters('laLocation')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('laUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

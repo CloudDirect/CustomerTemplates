@@ -1,0 +1,32 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnet": {
+            "value": {
+                "name": "uscore",
+                "resourceGroup": "multi-region-us-net-rg",
+                "addressPrefixes": [ "10.1.0.0/16" ],
+                "subnets": [
+                    { "name": "GatewaySubnet",  "addressPrefix": "10.1.0.0/24" },
+                    { "name": "web",            "addressPrefix": "10.1.1.0/24" },
+                    { "name": "app",            "addressPrefix": "10.1.2.0/24" },
+                    { "name": "data",           "addressPrefix": "10.1.3.0/24" },
+                    { "name": "mgmt",           "addressPrefix": "10.1.4.0/24" }
+                ]
+            }
+        },
+        "globalciOwnerTag": {
+            "value": "luke.fussell"
+        },
+        "globalappIDTag": {
+            "value": "MultiRegionDemo"
+        },
+        "globalorgIDTag": {
+            "value": "US"
+        },
+        "globalenvTag": {
+            "value": "dev"
+        }
+    }
+}

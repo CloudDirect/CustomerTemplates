@@ -1,0 +1,47 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "value": "dmadmin"
+        },
+        "vmResourceGroup": {
+            "value": "multi-region-eu-infra-rg"
+        },
+        "vmPrefix": {
+            "value": "eu-"
+        },
+        "netResourceGroup": {
+            "value": "multi-region-eu-net-rg"
+        },
+        "laResourceGroup": {
+            "value": "multi-region-eu-ops-rg"
+        },
+        "laWorkspaceName": {
+            "value": "multi-region-eu-ops-monitoring-ws"
+        },
+        "vnet": {
+            "value": {
+                "name": "eucore",
+                "subnets": [
+                    { "name": "web",            "numberofVms": 2,   "vmSize": "small" },
+                    { "name": "app",            "numberofVms": 2,   "vmSize": "small" },
+                    { "name": "data",           "numberofVms": 2,   "vmSize": "small" },
+                    { "name": "mgmt",           "numberofVms": 2,   "vmSize": "small" }
+                ]
+            }
+        },
+        "globalciOwnerTag": {
+            "value": "luke.fussell"
+        },
+        "globalappIDTag": {
+            "value": "MultiRegionDemo"
+        },
+        "globalorgIDTag": {
+            "value": "EU"
+        },
+        "globalenvTag": {
+            "value": "dev"
+        }
+    }
+}
