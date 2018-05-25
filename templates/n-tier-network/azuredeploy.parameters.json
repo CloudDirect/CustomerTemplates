@@ -2,22 +2,17 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "netResourceGroup": {
-            "value": "prod-net-rg",
-            "metadata": { 
-                "description": "Resource Group for network resources"
-            }
-        },
         "vnet": {
             "value": {
-                "name": "prod",
-                "addressPrefixes": [ "192.168.0.0/16" ],
+                "name": "core",
+                "resourceGroup": "demo-net-rg",
+                "addressPrefixes": [ "10.0.0.0/16" ],
                 "subnets": [
-                    { "name": "GatewaySubnet",  "addressPrefix": "172.16.0.0/24" },
-                    { "name": "web",            "addressPrefix": "172.16.1.0/24" },
-                    { "name": "app",            "addressPrefix": "172.16.2.0/24" },
-                    { "name": "data",           "addressPrefix": "172.16.3.0/24" },
-                    { "name": "mgmt",           "addressPrefix": "172.16.4.0/24" }
+                    { "name": "GatewaySubnet",  "addressPrefix": "10.0.0.0/24" },
+                    { "name": "web",            "addressPrefix": "10.0.1.0/24" },
+                    { "name": "app",            "addressPrefix": "10.0.2.0/24" },
+                    { "name": "data",           "addressPrefix": "10.0.3.0/24" },
+                    { "name": "mgmt",           "addressPrefix": "10.0.4.0/24" }
                 ]
             },
             "metadata": {
@@ -25,25 +20,25 @@
             }
         },
         "globalciOwnerTag": {
-            "value": "Luke Fussell",
+            "value": "luke.fussell",
             "metadata": {
                 "description": "Configuration Item Owner tag for the network"
             }
         },
         "globalappIDTag": {
-            "value": "WebApplication",
+            "value": "Demo",
             "metadata": {
                 "description": "Application ID tag for the network"
             }
         },
         "globalorgIDTag": {
-            "value": "PreSales",
+            "value": "Development",
             "metadata": {
                 "description": "Organisation ID tag for the network"
             }
         },
         "globalenvTag": {
-            "value": "prod",
+            "value": "dev",
             "metadata": {
                 "description": "Environment tag for the network"
             }
