@@ -22,6 +22,41 @@
                 "description": "Resource Group for infrastructure resources"
             }
         },
+        "laResourceGroup": {
+            "type": "string",
+            "defaultValue": "demo-ops-rg",
+            "metadata": {
+                "description": "Resource Group for Log Analytics"
+            }
+        },
+        "laWorkspaceName": {
+            "type": "string",
+            "defaultValue": "demo-ops-monitoring-ws",
+            "metadata": {
+                "description": "Log Analytics workspace name"
+            }
+        },
+        "laServiceTier": {
+            "type": "string",
+            "defaultValue": "PerGB2018",
+            "metadata": {
+                "description": "Log Analytics service tier"
+            }
+        },
+        "laDataRetention": {
+            "type": "int",
+            "defaultValue": 30,
+            "metadata": {
+                "description": "Log Analytics data retention"
+            }
+        },
+        "laLocation": {
+            "type": "string",
+            "defaultValue": "West Europe",
+            "metadata": {
+                "description": "Resource Group for infrastructure resources"
+            }
+        },
         "numberOfVms": {
             "type": "int",
             "defaultValue": 3,
@@ -111,7 +146,7 @@
         },
         "globalciOwnerTag": {
             "type": "string",
-            "defaultValue": "Luke Fussell",
+            "defaultValue": "luke.fussell",
             "minLength": 1,
             "metadata": {
                 "description": "Configuration Item Owner tag for the Virtual Machine."
@@ -119,7 +154,7 @@
         },
         "globalappIDTag": {
             "type": "string",
-            "defaultValue": "DemoNested",
+            "defaultValue": "Demo",
             "minLength": 1,
             "metadata": {
                 "description": "Application ID tag for the Virtual Machine."
@@ -127,7 +162,7 @@
         },
         "globalorgIDTag": {
             "type": "string",
-            "defaultValue": "PreSales",
+            "defaultValue": "Development",
             "minLength": 1,
             "metadata": {
                 "description": "Organisation ID tag for the Virtual Machine."
@@ -155,7 +190,8 @@
         "vpngwUri": "[concat(variables('uridir'), 'vpnGateway/azuredeploy.json')]",
         "asUri": "[concat(variables('uridir'), 'availabilitySet/azuredeploy.json')]",
         "lbUri": "[concat(variables('uridir'), 'loadBalancer/azuredeploy.json')]",
-        "vmUri": "[concat(variables('uridir'), 'virtualMachine-multi/azuredeploy.json')]"
+        "vmUri": "[concat(variables('uridir'), 'virtualMachine-multi/azuredeploy.json')]",
+        "laUri": "[concat(variables('uridir'), 'loganalyticslight/azuredeploy.json')]"
     },
     "resources": [
         {
@@ -341,6 +377,33 @@
             "copy": {
                 "name": "vmSubnetsCopy",
                 "count": "[length(parameters('tierNames'))]"
+            }
+        },
+        {
+            "name": "coreLogAnalytics",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "resourceGroup": "[parameters('laResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[parameters('laWorkspaceName')]"
+                    },
+                    "serviceTier": {
+                        "value": "[parameters('laServiceTier')]"
+                    },
+                    "dataRetention": {
+                        "value": "[parameters('laDataRetention')]"
+                    },
+                    "location": {
+                        "value": "[parameters('laLocation')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('laUri')]",
+                    "contentVersion": "1.0.0.0"
+                }
             }
         }
     ],
