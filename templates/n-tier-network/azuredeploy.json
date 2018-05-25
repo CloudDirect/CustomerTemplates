@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "vmResourceGroup": {
+            "type": "string",
+            "defaultValue": "demo-infra-rg",
+            "metadata": {
+                "description": "Resource Group for infrastructure resources"
+            }
+        },
         "vnet": {
             "type": "object",
             "defaultValue": {
@@ -160,7 +167,7 @@
             "name": "coreVirtualNetwork-multiAvailabilitySet",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2017-05-10",
-            "resourceGroup": "[parameters('vnet').resourceGroup]",
+            "resourceGroup": "[parameters('vmResourceGroup')]",
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
