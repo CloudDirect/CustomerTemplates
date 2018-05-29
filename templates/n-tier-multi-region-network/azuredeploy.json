@@ -35,7 +35,7 @@
                         "addressPrefix": "10.0.3.0/24"
                     },
                     {
-                            "name": "mgmt",
+                        "name": "mgmt",
                         "addressPrefix": "10.0.4.0/24"
                     }
                 ]
