@@ -2,9 +2,9 @@
 
 This master template deploys an N-tier IaaS (Infrastructure as a Service) solution to Azure. The default solution includes web, application and database tier Virtual Machines running Windows with VPN Gateway for connectivity to remote network. This template follows best practice for deploying a N-tier application, and will deploy with the specified number of VMs in each tier.
 
-This template provisions only VM infrastructure, follow [N-Tier IaaS Components (Network)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FCloudDirect%2FARMLab%2Fmaster%2Ftemplates%2Fn-tier-network) for network provisioning.
+This template provisions only VM infrastructure, follow [N-Tier IaaS Components (Network)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FCloudDirect%2FMasterTemplates%2Fmaster%2Ftemplates%2Fn-tier-network) for network provisioning.
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FCloudDirect%2FARMLab%2Fmaster%2Ftemplates%2Fn-tier-multi-vms%2Fazuredeploy.json)
+[![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FCloudDirect%2FMasterTemplates%2Fmaster%2Ftemplates%2Fn-tier-multi-vms%2Fazuredeploy.json)
 
 ## Deploy from Azure CLI
 
